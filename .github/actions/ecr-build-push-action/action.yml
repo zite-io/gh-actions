@@ -99,9 +99,10 @@ runs:
       sbom: false
       tags: |
         ${{ steps.meta.outputs.image_uri }}
+        ${{ steps.meta.outputs.registry }}/${{ inputs.ECR_REPOSITORY }}:buildcache
       build-args: |
-        ${{ inputs.DOMAIN != '' && format('DOMAIN={0}', inputs.DOMAIN) || '' }}
+        DOMAIN=${{ inputs.DOMAIN }}
       cache-from: |
         type=gha,scope=ecr-${{ inputs.ECR_REPOSITORY }}
-        type=registry,ref=${{ steps.meta.outputs.image_uri }}
+        type=registry,ref=${{ steps.meta.outputs.registry }}/${{ inputs.ECR_REPOSITORY }}:buildcache
       cache-to: type=gha,mode=max,scope=ecr-${{ inputs.ECR_REPOSITORY }}
