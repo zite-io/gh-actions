@@ -101,5 +101,7 @@ runs:
         ${{ steps.meta.outputs.image_uri }}
       build-args: |
         ${{ inputs.DOMAIN != '' && format('DOMAIN={0}', inputs.DOMAIN) || '' }}
-      cache-from: type=gha,scope=ecr-${{ inputs.ECR_REPOSITORY }}
+      cache-from: |
+        type=gha,scope=ecr-${{ inputs.ECR_REPOSITORY }}
+        type=registry,ref=${{ steps.meta.outputs.image_uri }}
       cache-to: type=gha,mode=max,scope=ecr-${{ inputs.ECR_REPOSITORY }}
