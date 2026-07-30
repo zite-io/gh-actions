@@ -56,8 +56,21 @@ runs:
   - name: Copy Dependency Files
     shell: bash
     run: |
-      cp "${{ inputs.APT_MODULES_FILE }}" apt_requirements.txt
-      cp "${{ inputs.PIP_MODULES_FILE }}" requirements.txt
+      set -euo pipefail
+      copy_if_needed() {
+        local src="$1" dest="$2"
+        if [ ! -f "$src" ]; then
+          echo "::notice::$src not found — skipping copy to $dest (pass it explicitly, or provide $dest directly, if needed)"
+          return 0
+        fi
+        if [ "$(realpath -m "$src")" = "$(realpath -m "$dest")" ]; then
+          echo "::notice::$src already at $dest — skipping copy"
+          return 0
+        fi
+        cp "$src" "$dest"
+      }
+      copy_if_needed "${{ inputs.APT_MODULES_FILE }}" apt_requirements.txt
+      copy_if_needed "${{ inputs.PIP_MODULES_FILE }}" requirements.txt
 
   - name: Configure AWS Credentials (OIDC)
     uses: aws-actions/configure-aws-credentials@v5
